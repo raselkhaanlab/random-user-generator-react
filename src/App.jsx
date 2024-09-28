@@ -81,6 +81,7 @@ const App = () => {
             onErrorsChange={handleErrorsChange}
             seed={seed}
             onSeedChange={handleSeedChange}
+            users={users}
           />
         </Col>
       </Row>

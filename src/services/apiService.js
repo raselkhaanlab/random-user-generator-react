@@ -13,7 +13,7 @@ export const fetchRandomSeed = async () => {
 };
 export const fetchRegions = async () => {
   const response = await fetch(`${apiBaseUrl}/api/regions-locales`);
-  return await handleResponse(response, { regions: [], locales: [] });
+  return await handleResponse(response, { regions: [] });
 };
 
 async function handleResponse(response, fallbackData) {

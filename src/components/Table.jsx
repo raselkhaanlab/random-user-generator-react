@@ -1,22 +1,27 @@
 import { useRef, useCallback } from "react";
 import { Table as BootstrapTable } from "react-bootstrap";
+import { useDebouncedCallback } from "use-debounce";
 
 const Table = ({ users, onLoadMore }) => {
   const observer = useRef();
-  const loadNumber = useRef(0);
-  console.log(users.length, "length");
+
+  const loadMore = useDebouncedCallback(() => {
+    onLoadMore();
+  }, 0);
+
   const lastUserElementRef = useCallback(
     (node) => {
       if (observer.current) observer.current.disconnect();
+
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
-          onLoadMore();
-          loadNumber.current += 1;
+          loadMore();
         }
       });
+
       if (node) observer.current.observe(node);
     },
-    [onLoadMore]
+    [loadMore]
   );
 
   return (

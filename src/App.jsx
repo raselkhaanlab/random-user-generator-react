@@ -9,13 +9,26 @@ import {
 import { Container, Row, Col } from "react-bootstrap";
 import "./App.scss";
 
+import { useDebouncedCallback } from "use-debounce";
 const App = () => {
   const [regions, setRegions] = useState([]);
   const [region, setRegion] = useState("");
   const [errors, setErrors] = useState(0);
-  const [seed, setSeed] = useState();
+  const [seed, setSeed] = useState(42);
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
+
+  const loadData = useDebouncedCallback(async()=> {
+    if (region && seed) {
+      const users = await fetchUsers(region, errors, seed, page);
+      setUsers((prevUsers) => {
+        const newUsers = users.map((user, index)=> {
+          return ({...user, index: index + prevUsers.length + 1});
+        });
+        return [...prevUsers, ...newUsers];
+      });
+    }
+  }, 500);
 
   useEffect(() => {
     const loadRegions = async () => {
@@ -28,22 +41,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loadSeed = async () => {
-      const response = await fetchRandomSeed();
-      setSeed(response.seed);
-    };
-    loadSeed();
-  }, []);
-  useEffect(() => {
-    const loadData = async () => {
-      if (region && seed) {
-        const users = await fetchUsers(region, errors, seed, page);
-        // console.log(response);
-        setUsers((prev) => [...prev, ...users]);
-      }
-    };
     loadData();
-  }, [region, errors, seed, page]);
+  }, [region, errors, seed, page, loadData]);
 
   const handleRegionChange = (newRegion) => {
     setUsers([]); // Reset data on region change
@@ -57,6 +56,12 @@ const App = () => {
     setErrors(newErrors);
   };
 
+  const handleInputSeedChange = (e)=> {
+    console.log(e);
+    setUsers([]); // Reset data on seed change
+    setPage(1); // Reset pagination
+    setSeed(e.target.value);
+  }
   const handleSeedChange = async () => {
     const response = await fetchRandomSeed();
     setUsers([]); // Reset data on seed change
@@ -74,6 +79,7 @@ const App = () => {
       <Row className="mb-4">
         <Col>
           <Controls
+            onInputSeedChange={handleInputSeedChange}
             regions={regions}
             region={region}
             onRegionChange={handleRegionChange}

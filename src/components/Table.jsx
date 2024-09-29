@@ -25,10 +25,7 @@ const Table = ({ users, onLoadMore }) => {
   );
 
   return (
-    <div
-      className="table-container"
-      style={{ maxHeight: "min(420px, 80vh)", overflowY: "auto" }}
-    >
+    <div className="table-container">
       <BootstrapTable striped bordered hover responsive>
         <thead>
           <tr>

@@ -84,8 +84,8 @@ const Controls = ({
             </InputGroup>
           </Form.Group>
         </Col>
-        <Col md={3} className=" ms-md-auto">
-          <Form.Label>Export Users</Form.Label>
+        <Col md={3} className="d-flex flex-column align-items-end">
+          <Form.Label className="mt-1 mt-md-0">Export Users</Form.Label>
           <Dropdown>
             <Dropdown.Toggle
               variant="primary"

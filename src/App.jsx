@@ -17,18 +17,24 @@ const App = () => {
   const [seed, setSeed] = useState(42);
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const loadData = useDebouncedCallback(async()=> {
     if (region && seed) {
-      const users = await fetchUsers(region, errors, seed, page);
-      setUsers((prevUsers) => {
+      try {
+        setIsLoading(true);
+        const users = await fetchUsers(region, errors, seed, page);
+        setUsers((prevUsers) => {
         const newUsers = users.map((user, index)=> {
-          return ({...user, index: index + prevUsers.length + 1});
+        return ({...user, index: index + prevUsers.length + 1});
         });
         return [...prevUsers, ...newUsers];
-      });
+        });
+      }finally {
+        setIsLoading(false);
+      }
     }
-  }, 500);
+  }, 420);
 
   useEffect(() => {
     const loadRegions = async () => {
@@ -93,7 +99,7 @@ const App = () => {
       </Row>
       <Row>
         <Col>
-          <Table users={users} onLoadMore={loadMoreUsers} />
+          <Table isLoading={isLoading} users={users} onLoadMore={loadMoreUsers} />
         </Col>
       </Row>
     </Container>
